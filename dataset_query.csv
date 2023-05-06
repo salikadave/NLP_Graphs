@@ -1,0 +1,2 @@
+cypher
+MATCH (r:Recipe)-[:CONTAINS]->(i:Ingredient) WHERE r.cuisine = 'Moroccan' AND i.sodium < 100 -- Assuming sodium is measured in milligrams (mg) AND i.category IN ['protein', 'vegetable'] -- Assuming healthy ingredients are classified as 'protein' or 'vegetable' RETURN DISTINCT r.name
