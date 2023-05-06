@@ -1,0 +1,35 @@
+cypher
+MATCH (r:Recipe)-[:CONTAINS]->(i:Ingredient) WHERE r.cuisine = 'Moroccan' AND i.sodium < 100 -- Assuming sodium is measured in milligrams (mg) AND i.category IN ['protein' 'vegetable'] -- Assuming healthy ingredients are classified as 'protein' or 'vegetable' RETURN DISTINCT r.name
+MATCH (r:Recipe) WHERE 'dinner' IN r.meal_types AND 'dessert' IN r.serving_suggestions RETURN r.name
+MATCH (r:Recipe)-[:CONTAINS]->(i:Ingredient) WHERE 'gluten-free' IN r.dietary_restrictions AND 'vegetarian' IN r.dietary_restrictions AND 'dinner' IN r.meal_types AND 'pasta' IN i.name RETURN DISTINCT r.name
+MATCH (r:Recipe) WHERE 'gluten-free' IN r.dietary_restrictions AND 'french' IN r.cuisine AND ('dinner' IN r.meal_types OR 'dessert' IN r.serving_suggestions) RETURN r.name
+MATCH (r:Recipe) WHERE 'dinner' IN r.meal_types RETURN r.name
+MATCH (r:Recipe)-[:CONTAINS]->(i:Ingredient) WHERE 'dessert' IN r.meal_types AND i.name CONTAINS 'bread' RETURN r.name
+MATCH (r:Recipe) WHERE 'pie' IN r.tags OR 'pizza' IN r.tags OR ('dinner' IN r.meal_types AND NOT 'dessert' IN r.meal_types) RETURN r.name
+MATCH (r:Recipe)-[:HAS_INGREDIENT]->(i:Ingredient) WHERE 'cake' IN i.name AND 'dessert' IN r.meal_types AND  'vegetarian' IN r.tags RETURN r.name
+MATCH (r:Recipe)-[:HAS_INGREDIENT]->(i:Ingredient) WHERE 'pork' IN i.name AND 'dinner' IN r.meal_types RETURN r.name
+MATCH (r:Recipe) WHERE r.cuisine = 'Moroccan' AND r.healthiness = 'healthy' AND r.sodiumLevel = 'low' RETURN r.name r.description r2.name
+MATCH (r1:Recipe)-[:IS_MAIN_COURSE_OF]->(m:Menu)<-[:IS_DESSERT_OF]-(r2:Recipe) RETURN r1.name
+MATCH (r:Recipe) WHERE ALL(x IN ['gluten-free' 'dinner' 'vegetarian' 'pasta'] WHERE x IN r.tags) RETURN r.name AS RecipeName
+MATCH (r:Recipe)-[:HAS_TAG]->(t:Tag) WHERE t.name IN ['French' 'Gluten-free' 'Dinner' 'Dessert'] WITH r COLLECT(t.name) AS tags WHERE ALL(tag IN ['French' 'Gluten-free' 'Dinner' 'Dessert'] WHERE tag IN tags) RETURN r.name AS recipe_nametags
+MATCH (r:Recipe)-[:CONTAINS]->(i:Ingredient)WHERE r.category = 'Dessert' AND toLower(i.name) CONTAINS 'bread' RETURN r.name collect(i.name) AS ingredients
+MATCH (r:Recipe) WHERE (r.category = 'pie' OR r.category = 'pizza' OR r.course = 'dinner') RETURN r.name AS RecipeName r.description AS Description
+MATCH (r:Recipe) WHERE r.diabeticFriendly = true AND r.calorieCount <= {maxCalories} AND r.vegetarian = true AND r.carbCount <= {maxCarbs} AND r.dishType = 'side' RETURN r LIMIT {resultLimit}
+MATCH (r:Recipe) WHERE toLower(r.type) = ""dinner"" AND toLower(""shrimp"") IN [x IN r.ingredients | toLower(x)] RETURN r.title AS Recipe
+MATCH (r:Recipe)-[:IS_OF_TYPE]->(dt:DishType) (r)-[:IS_SUITABLE_FOR]->(diet:DietType) WHERE dt.name IN ['salad' 'side' 'dinner'] AND diet.name IN ['vegetarian' 'vegan'] RETURN r.name AS RecipeName diet.name AS DietType dt.name AS DishType ORDER BY r.name
+MATCH (r:Recipe) WHERE r.cuisine = 'Italian' AND r.dishType = 'side' AND r.dietaryRestriction = 'vegetarian' RETURN r.name r.ingredients r.instructions LIMIT 10
+MATCH (r:Recipe)-[:IS]->(:Meal {type: 'dinner'})-[:HAS]->(:Taste {description: 'delicious'}) RETURN r.name r.ingredients r.instructions LIMIT 10
+MATCH (r:Recipe)-[:HAS_CATEGORY]->(c:Category {name: 'dessert'}) RETURN r.name r.instructions COLLECT(DISTINCT i.name) AS ingredients LIMIT 10
+MATCH (r:Recipe) WHERE toLower(r.title) CONTAINS 'chicken' AND toLower(r.title) CONTAINS 'casserole' AND toLower(r.mealType) = 'dinner' RETURN r.title r.ingredients r.instructions LIMIT 10
+MATCH (r:Recipe)-[:BELONGS_TO]->(c:Category) WHERE c.name IN ['breakfast' 'gluten-free'] WITH r count(c) as cnt WHERE cnt = 2 RETURN r.name r.ingredients r.instructions LIMIT 10
+MATCH (r:Recipe)-[:HAS_PROPERTY]->(p:Property) WHERE p.name IN ['healthy' 'low-calorie' 'low-fat' 'low-sodium'] WITH r count(p) as properties_count WHERE properties_count = 4 RETURN r.name as Recipe
+MATCH (r:Recipe) WHERE r.dietaryRestrictions CONTAINS 'low-carb' AND r.mealType = 'lunch' RETURN r.name r.ingredients
+MATCH (r:Recipe)-[:INCLUDES]->(i:Ingredient) WHERE i.name CONTAINS 'bread' RETURN r.name AS RecipeName
+MATCH (r:Recipe)-[:HAS_TAG]->(t:Tag) WHERE t.name IN ['cookie' 'dessert'] RETURN r.name AS recipeName
+MATCH (r:Recipe)-[:HAS_INGREDIENT]->(i:Ingredient) WHERE r.cuisine = 'Italian' AND i.type = 'Pasta' AND r.dietaryRestrictions CONTAINS 'Vegetarian' AND  r.healthiness = 'Healthy' AND r.mealType = 'Dinner' RETURN r
+MATCH (recipe:Recipe)-[:BELONGS_TO]->(category:Category) WHERE recipe.title CONTAINS 'cake' AND category.name = 'dessert' RETURN recipe.title
+MATCH (r:Recipe)-[:INCLUDES]->(i:Ingredient {name: 'chicken'}) WHERE r.type = 'soup' RETURN r.name
+MATCH (r:Recipe)-[:HAS_CATEGORY]->(c:Category) WHERE c.name IN ['appetizer' 'dinner'] RETURN r.name AS recipeName"
+MATCH (r:Recipe)-[:HAS_CUISINE]->(c:Cuisine) WHERE c.name = 'Italian' AND (r.type = 'lunch' OR r.type = 'snack') RETURN r.name AS recipeName r.description AS recipeDescription
+MATCH (recipe:Recipe) WHERE recipe.calories < 500 AND recipe.sodium < 1000 AND recipe.cuisine 'Caribbean' AND recipe.carbs < 30 AND recipe.dish_type = 'side' RETURN recipe
+MATCH (r:Recipe)-[:HAS_TAG]->(t:Tag) WHERE t.name IN ['mexican' 'beef' 'dinner'] RETURN r.name AS recipeName
